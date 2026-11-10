@@ -84,6 +84,7 @@ const DOC_TYPES = {
 /* ---------------- state ---------------- */
 const LS_KEY = 'fib140.state.v1';
 let DB = null;
+let remoteReady = false; /* الوضع المشترك: البيانات محفوظة في PostgreSQL */
 let route = { page: 'dashboard', id: null };
 let _confirmCb = null;
 let activeModalEl = null;
@@ -289,8 +290,9 @@ function save() {
   try {
     localStorage.setItem(LS_KEY, JSON.stringify(DB));
   } catch (e) {
-    toast('تعذر حفظ البيانات — مساحة التخزين ممتلئة', 'err');
+    if (!remoteReady) toast('تعذر حفظ البيانات — مساحة التخزين ممتلئة', 'err');
   }
+  if (remoteReady && typeof Api !== 'undefined' && Api.isRemote()) Api.queueSave(DB);
   updateChrome();
 }
 
@@ -442,6 +444,8 @@ function updateChrome() {
   if (txt) txt.textContent = bytes > 1048576 ? (bytes / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(bytes / 1024)) + ' KB';
   const fill = $('#storageFill');
   if (fill) fill.style.width = clamp(bytes / (25 * 1048576) * 100, 2, 100) + '%';
+  const store = $('#sbStore');
+  if (store) store.textContent = remoteReady ? 'POSTGRESQL' : 'LOCAL ARCHIVE';
   const cu = (typeof Auth !== 'undefined' && Auth.current) ? Auth.current() : null;
   const dispName = cu ? (cu.name || cu.user) : (DB.settings.agentName || '—');
   $('#agentName').textContent = dispName;
@@ -1396,8 +1400,40 @@ function bindGlobal() {
 }
 
 async function boot() {
-  await FileStore.init();
-  DB = loadState();
+  const remote = typeof Api !== 'undefined' && await Api.probe();
+
+  if (remote) {
+    const accounts = await Api.accounts().catch(() => []);
+    Auth.setRemote(accounts);
+    if (!(await Api.seeded().catch(() => true))) {
+      /* أول تشغيل على قاعدة فارغة: نزرع الأرشيف والحسابات الافتراضية */
+      DB = normalizeState(seedState());
+      await Auth.ensureAccounts();
+      await Api.bootstrap(DB);
+    }
+    const session = await Api.session().catch(() => null);
+    if (session) {
+      try {
+        sessionStorage.setItem('fib140.unlocked', '1');
+        sessionStorage.setItem('fib140.user', session);
+        DB = normalizeState(await Api.getState());
+        remoteReady = true;
+        await FileStore.init();
+      } catch (e) {
+        console.warn('state load failed', e);
+      }
+    }
+    Api.watch((data, conflict) => {
+      DB = normalizeState(data);
+      remoteReady = true;
+      if (conflict) toast('حُدِّثت البيانات من مستخدم آخر — حُمِّلت أحدث نسخة', 'info');
+      render(); updateChrome();
+    });
+  } else {
+    await FileStore.init();
+    DB = loadState();
+  }
+
   bindGlobal();
   registerPage('dashboard', pageDashboard);
   registerPage('networks', pageNetworks);
@@ -1407,8 +1443,9 @@ async function boot() {
   if (bs) bs.innerHTML = fbiSeal('seal-lg');
   const fav = $('#favicon');
   if (fav) fav.href = 'assets/fbi-seal.svg';
+  if (!DB) DB = normalizeState(seedState());
   const unlocked = await Auth.gate();
-  if (unlocked) render();
+  if (unlocked && DB) render();
   tickClock();
   setInterval(tickClock, 1000);
   updateChrome();

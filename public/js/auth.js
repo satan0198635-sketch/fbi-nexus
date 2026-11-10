@@ -10,6 +10,9 @@ const Auth = (() => {
   const AUTO_LOCK_MS = 15 * 60 * 1000;
   let timer = null;
   let lastActivity = Date.now();
+  let remoteAccounts = [];
+  const remoteMode = () => (typeof Api !== 'undefined' && Api.isRemote());
+  function setRemote(list) { remoteAccounts = Array.isArray(list) ? list.map(a => String(a)) : []; }
 
   /* الحسابات المخوّلة الافتراضية — تُزرع مرة واحدة */
   const DEFAULTS = [
@@ -178,7 +181,8 @@ const Auth = (() => {
 
   function lockScreen(mode = 'unlock', msg = '') {
     if (typeof closeModal === 'function') closeModal();
-    const list = users().map(u => u.user).join(' · ') || '—';
+    const known = remoteMode() && remoteAccounts.length ? remoteAccounts : users().map(u => u.user);
+    const list = known.join(' · ') || '—';
     mount(frame(
       mode === 'auto' ? 'تم قفل الجلسة' : 'الدخول إلى النظام',
       mode === 'auto'
@@ -197,7 +201,7 @@ const Auth = (() => {
         <button class="btn auth-btn" id="au_submit"><i class="fa-solid fa-shield-halved"></i><span>دخول آمن</span></button>
         <div class="auth-policy">
           <div class="auth-policy-head"><i class="fa-solid fa-id-card-clip"></i> الحسابات المخوّلة</div>
-          <div class="auth-accounts">${users().map(u => `<b>${esc(u.user)}</b>`).join('') || '<b>—</b>'}</div>
+          <div class="auth-accounts">${known.map(u => `<b>${esc(u)}</b>`).join('') || '<b>—</b>'}</div>
           <div class="auth-policy-note">لا يمكن إنشاء حساب أو استعادة كلمة المرور إلا من داخل النظام بصلاحية العميل A-140. تُسجَّل كل محاولات الدخول.</div>
         </div>
       </div>`));
@@ -206,8 +210,36 @@ const Auth = (() => {
       const err = $('#au_err');
       const name = normUser(val('#au_user'));
       const pass = val('#au_pass');
-      const s = sec();
       if (!name || !pass) { err.textContent = 'أدخل اسم المستخدم وكلمة المرور'; return; }
+
+      /* الوضع المشترك: التحقق يتم على الخادم مقابل قاعدة PostgreSQL */
+      if (remoteMode()) {
+        const btn = $('#au_submit');
+        if (btn) btn.disabled = true;
+        try {
+          const r = await Api.login(name, pass);
+          if (!r.ok) {
+            err.textContent = r.error === 'locked' ? 'الحساب مقفل مؤقتاً — أعد المحاولة بعد دقيقة'
+              : r.error === 'too_many_attempts' ? 'محاولات كثيرة — حاول بعد قليل'
+                : r.error === 'db_unavailable' ? 'قاعدة البيانات غير متاحة'
+                  : 'اسم المستخدم أو كلمة المرور غير صحيحة';
+            $('#au_pass').value = '';
+            return;
+          }
+          DB = normalizeState(await Api.getState());
+          remoteReady = true;
+          await FileStore.init();
+          const acc = users().find(x => x.user === name);
+          if (!acc) { err.textContent = 'الحساب غير موجود في قاعدة البيانات'; return; }
+          await unlock(acc);
+        } catch (e) {
+          err.textContent = 'تعذر الاتصال بالخادم — أعد المحاولة';
+        } finally {
+          if (btn) btn.disabled = false;
+        }
+        return;
+      }
+
       const u = users().find(x => x.user === name);
       if (!u) {
         err.textContent = 'اسم المستخدم أو كلمة المرور غير صحيحة';
@@ -274,6 +306,7 @@ const Auth = (() => {
     const root = $('#authRoot');
     if (root && root.classList.contains('open')) return;
     stopAutoLock();
+    if (remoteMode()) Api.logout();
     try {
       sessionStorage.removeItem(SESSION_KEY);
       sessionStorage.removeItem(USER_KEY);
@@ -284,6 +317,24 @@ const Auth = (() => {
   }
 
   async function gate() {
+    if (remoteMode()) {
+      const serverUser = await Api.session().catch(() => null);
+      const known = serverUser && users().some(u => u.user === serverUser);
+      if (known) {
+        try {
+          sessionStorage.setItem(SESSION_KEY, '1');
+          sessionStorage.setItem(USER_KEY, serverUser);
+        } catch (e) { }
+        DB.settings.activeUser = serverUser;
+        lastActivity = Date.now();
+        startAutoLock();
+        return true;
+      }
+      try { sessionStorage.removeItem(SESSION_KEY); sessionStorage.removeItem(USER_KEY); } catch (e) { }
+      lockScreen('unlock');
+      return false;
+    }
+
     await ensureAccounts();
     let session = false, key = '';
     try {
@@ -404,11 +455,8 @@ const Auth = (() => {
   }
 
   ['pointerdown', 'keydown', 'wheel', 'touchstart'].forEach(ev =>
-    document.addEventListener(ev, () => { lastActivity = Date.now(); }, { passive: true }));
-
-  return {
-    gate, lockNow, lockScreen, ensureAccounts,
-    current, isAdmin, isDoj, allowed, canPage, homePage, hasUsers,
+    document.addEventListener(ev, () => { lastActivity = Date.now(); }, { passive: true }));  return {
+    setRemote, gate, lockNow, lockScreen, ensureAccounts, current, isAdmin, isDoj, allowed, canPage, homePage, hasUsers,
     changePass, addUser, resetPass, removeUser, media, setMedia, updateProfile, updateUser,
     RANKS,
     list: () => users().map(publicUser),

@@ -23,6 +23,16 @@ const FileStore = (() => {
   }
 
   async function init() {
+    /* الوضع المشترك: الملفات محفوظة في PostgreSQL عبر الخادم */
+    if (typeof Api !== 'undefined' && Api.isRemote()) {
+      try {
+        const files = await Api.listFiles();
+        files.forEach(f => cache.set(f.id, f));
+        return;
+      } catch (e) {
+        console.warn('[FileStore] server files unavailable', e);
+      }
+    }
     try {
       db = await open();
       await new Promise((resolve) => {
@@ -43,6 +53,7 @@ const FileStore = (() => {
   async function put(record) {
     const rec = { id: record.id || newId(), name: record.name || 'file', type: record.type || '', dataUrl: record.dataUrl, size: record.size || record.dataUrl.length, at: Date.now() };
     cache.set(rec.id, rec);
+    if (typeof Api !== 'undefined' && Api.isRemote()) Api.putFile(rec);
     if (db) {
       try {
         const tx = db.transaction(STORE, 'readwrite');
@@ -59,6 +70,7 @@ const FileStore = (() => {
 
   function remove(id) {
     cache.delete(id);
+    if (typeof Api !== 'undefined' && Api.isRemote()) Api.deleteFile(id);
     if (db) {
       try {
         const tx = db.transaction(STORE, 'readwrite');

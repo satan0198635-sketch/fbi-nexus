@@ -1309,7 +1309,7 @@ function pageSettings() {
     <div class="card-head"><div class="card-title"><i class="fa-solid fa-shield-halved"></i> حالة النظام</div></div>
     <div class="grid-3">
       <div class="loc-item"><span class="loc-ico" style="background:rgba(34,197,94,.12);color:#4ade80"><i class="fa-solid fa-lock"></i></span>
-        <div><div class="loc-name">التخزين المحلي</div><div class="loc-sub">localStorage + IndexedDB</div></div></div>
+        <div><div class="loc-name">${remoteReady ? 'قاعدة البيانات المشتركة' : 'التخزين المحلي'}</div><div class="loc-sub">${remoteReady ? 'PostgreSQL · مزامنة عبر الخادم' : 'localStorage + IndexedDB'}</div></div></div>
       <div class="loc-item"><span class="loc-ico" style="background:rgba(61,127,184,.16);color:#9fc7e8"><i class="fa-solid fa-shield"></i></span>
         <div><div class="loc-name">مؤشر التهديد</div><div class="loc-sub">${threatIndex()}% · ${threatLevel()}</div></div></div>
       <div class="loc-item"><span class="loc-ico" style="background:rgba(245,158,11,.12);color:#fcd34d"><i class="fa-solid fa-clock"></i></span>
