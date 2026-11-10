@@ -723,7 +723,7 @@ function pageDashboard() {
       <div>
         <div class="eyebrow">SECURE CHANNEL · ${esc(cu ? cu.clearance : 'CLEARANCE LEVEL 5')} · ${esc(meId || '—')}</div>
         <h2>مرحباً${meName ? '، ' + esc(meName) : ' بك'}</h2>
-        <p>غرفة العمليات المركزية لمكتب لوس سانتوس الميداني. جميع السجلات في هذا الأرشيف مشفّرة ومحلية على هذا الجهاز، وتشمل الشبكات الإجرامية، المطلوبين، المذكرات القضائية، والبرقيات الميدانية.</p>
+        <p>غرفة العمليات المركزية لمكتب لوس سانتوس الميداني. جميع السجلات في هذا الأرشيف محفوظة ${remoteReady ? 'في قاعدة بيانات PostgreSQL مشتركة يراها كل العملاء المخوّلين' : 'محلياً ومشفّرة على هذا الجهاز'}، وتشمل الشبكات الإجرامية، المطلوبين، المذكرات القضائية، والبرقيات الميدانية.</p>
         <div class="hero-tags">
           <span class="chip chip-cyan"><i class="fa-solid fa-shield-halved"></i> ${esc(meDiv || '—')}</span>
           <span class="chip">مؤشر التهديد ${idx}%</span>
