@@ -17,7 +17,12 @@ const { Pool } = require('pg');
 try { process.loadEnvFile(path.join(__dirname, '.env')); } catch (e) { /* no .env */ }
 
 const PORT = Number(process.env.PORT) || 3000;
-const DATABASE_URL = process.env.DATABASE_URL || '';
+/* Render قد يستخدم أسماء أخرى حسب طريقة الإنشاء — نقبل الشائعة منها */
+const DATABASE_URL = process.env.DATABASE_URL
+  || process.env.DATABASE_INTERNAL_URL
+  || process.env.POSTGRES_URL
+  || process.env.PG_URL
+  || '';
 const SESSION_SECRET = process.env.SESSION_SECRET || '';
 const SESSION_TTL_MS = 12 * 60 * 60 * 1000;
 const MAX_STATE_BYTES = 30 * 1024 * 1024;
