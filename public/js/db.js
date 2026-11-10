@@ -109,7 +109,18 @@ const FileStore = (() => {
       const h = Math.max(1, Math.round(img.height * scale));
       const cv = document.createElement('canvas');
       cv.width = w; cv.height = h;
-      cv.getContext('2d').drawImage(img, 0, 0, w, h);
+      const ctx = cv.getContext('2d');
+      ctx.drawImage(img, 0, 0, w, h);
+      /* الصور الشفافة (توقيع أو ختم PNG) تُحفظ PNG حتى تبقى الشفافية، لأن JPEG يحوّلها إلى خلفية سوداء */
+      let alpha = false;
+      try {
+        const px = ctx.getImageData(0, 0, w, h).data;
+        for (let i = 3; i < px.length; i += 4) { if (px[i] < 250) { alpha = true; break; } }
+      } catch (e) { alpha = /png|webp|gif|svg/i.test(file.type || ''); }
+      if (alpha) {
+        const out = cv.toDataURL('image/png');
+        return put({ name: file.name, type: 'image/png', dataUrl: out, size: Math.round(out.length * 0.75) });
+      }
       const out = cv.toDataURL('image/jpeg', quality);
       return put({ name: file.name, type: 'image/jpeg', dataUrl: out, size: Math.round(out.length * 0.75) });
     } catch (e) {

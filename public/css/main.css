@@ -474,7 +474,7 @@ select.inp{
   width:52px;height:64px;border-radius:2px;border:1px solid #2a3a4b;display:grid;place-items:center;
   color:var(--dim);background:#0a141e;flex:0 0 52px;overflow:hidden;
 }
-.upload-box img{width:100%;height:100%;object-fit:contain;border:0;background:#0a141e}
+.upload-box img{width:100%;height:100%;object-fit:contain;border:0;background:#fff}
 .upload-text{font-size:.66rem;color:var(--dim);line-height:1.6;flex:1;min-width:110px}
 .upload label.btn{cursor:pointer}
 .upload input[type=file]{display:none}
@@ -613,7 +613,7 @@ select.inp{
 .sheet-sign{display:flex;justify-content:space-between;align-items:flex-end;gap:8mm;margin-top:9mm;padding-top:4mm;border-top:1px dashed #b9c5d0}
 .sig-name{font-weight:700;font-size:9.6pt}
 .sig-role{font-size:7.8pt;color:#5b6b78;margin-top:1mm}
-.sig-img{max-height:17mm;max-width:58mm;object-fit:contain;display:block;margin-bottom:1mm}
+.sig-img{max-height:17mm;max-width:58mm;object-fit:contain;display:block;margin-bottom:1mm;background:#fff}
 .seal-img{max-height:26mm;max-width:30mm;object-fit:contain;display:block;margin:0 auto 1mm}
 .sig-line{width:56mm;border-bottom:1px solid #0b0f14;margin-top:2mm}
 .barcode{display:flex;align-items:flex-end;gap:1px;height:11mm;margin-top:2.5mm}
