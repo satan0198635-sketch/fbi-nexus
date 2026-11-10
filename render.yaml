@@ -1,5 +1,8 @@
 # Render Blueprint — FBI-NEXUS + PostgreSQL
-# Deploy: Render Dashboard → New → Blueprint → اختر هذا المستودع.
+#
+# النشر بضغطة واحدة: Render Dashboard → New → Blueprint → اختر هذا المستودع → Apply.
+# ينشئ هذا الملف خدمة الويب وقاعدة البيانات معًا، ويربط DATABASE_URL تلقائيًا
+# (بدون نسخ روابط أو إدخال متغيرات يدويًا).
 services:
   - type: web
     name: fbi-nexus
@@ -7,6 +10,8 @@ services:
     plan: free
     buildCommand: npm install
     startCommand: npm start
+    healthCheckPath: /api/health
+    autoDeploy: true
     envVars:
       - key: DATABASE_URL
         fromDatabase:
