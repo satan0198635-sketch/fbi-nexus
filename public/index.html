@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0a1017">
+<title>FBI-NEXUS · نظام إدارة القضايا الفيدرالي</title>
+<link id="favicon" rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+
+<div id="app">
+
+  <div class="classif-bar">
+    <span class="cb-tag">SECRET</span>
+    <span class="cb-mid">LAW ENFORCEMENT SENSITIVE // FBI-NEXUS // LOS SANTOS FIELD OFFICE</span>
+    <span class="cb-right mono" id="cbRight">A-140</span>
+  </div>
+
+  <div class="app-body">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="brand-seal" id="brandSeal"></div>
+        <div class="brand-text">
+          <div class="brand-title">FBI<span class="brand-x">-NEXUS</span></div>
+          <div class="brand-sub">مكتب التحقيقات الفيدرالي</div>
+          <div class="brand-sub2">NETWORK FOR ENFORCEMENT, X-INTELLIGENCE &amp; UNIFIED SECURITY</div>
+        </div>
+      </div>
+
+      <div class="unit-line">LOS SANTOS FIELD OFFICE · وحدة العمليات الخاصة</div>
+
+      <div class="agent-card">
+        <div class="agent-photo" id="agentPhoto"><i class="fa-solid fa-user-shield"></i></div>
+        <div class="agent-meta">
+          <div class="agent-name" id="agentName">A-140</div>
+          <div class="agent-rank" id="agentRank">محقق فيدرالي متقدم · وحدة العمليات الخاصة</div>
+          <div class="agent-state"><span class="dot"></span> على اتصال آمن · CLR-5</div>
+        </div>
+      </div>
+
+      <nav class="nav">
+        <div class="nav-label">مركز القيادة</div>
+        <button class="nav-item" data-act="go" data-id="dashboard"><i class="fa-solid fa-chart-pie"></i><span>لوحة القيادة</span></button>
+        <button class="nav-item" data-act="go" data-id="networks"><i class="fa-solid fa-sitemap"></i><span>الشبكات والهياكل</span></button>
+        <button class="nav-item" data-act="go" data-id="persons"><i class="fa-solid fa-user-secret"></i><span>المطلوبون والسجلات</span></button>
+        <button class="nav-item" data-act="go" data-id="map"><i class="fa-solid fa-map-location-dot"></i><span>خريطة سان أندرياس</span></button>
+        <div class="nav-label">الأعمال القضائية</div>
+        <button class="nav-item" data-act="go" data-id="documents"><i class="fa-solid fa-file-signature"></i><span>المذكرات والطلبات</span></button>
+        <button class="nav-item" data-act="go" data-id="doj"><i class="fa-solid fa-scale-balanced"></i><span>قضايا الوزارة</span></button>
+        <button class="nav-item" data-act="go" data-id="bulletins"><i class="fa-solid fa-tower-broadcast"></i><span>البرقيات والتعميمات</span></button>
+        <button class="nav-item" data-act="go" data-id="cases"><i class="fa-solid fa-folder-closed"></i><span>ملفات القضايا</span></button>
+        <button class="nav-item" data-act="go" data-id="evidence"><i class="fa-solid fa-box-archive"></i><span>سجل الأدلة</span></button>
+        <button class="nav-item" data-act="go" data-id="reports"><i class="fa-solid fa-file-pdf"></i><span>تقارير الأدلة</span></button>
+        <button class="nav-item" data-act="go" data-id="media"><i class="fa-solid fa-photo-film"></i><span>ملف الصور</span></button>
+        <div class="nav-label">النظام</div>
+        <button class="nav-item" data-act="go" data-id="audit"><i class="fa-solid fa-clipboard-list"></i><span>سجل التدقيق</span></button>
+        <button class="nav-item" data-act="go" data-id="settings"><i class="fa-solid fa-gears"></i><span>الإعدادات والنسخ</span></button>
+      </nav>
+
+      <div class="sidebar-foot">
+        <div class="sf-row"><span>FBI-NEXUS</span><span class="mono">v3.1</span></div>
+        <div class="sf-row"><span>ARCHIVE</span><span class="ok">ENCRYPTED</span></div>
+        <div class="sf-bar"><i id="storageFill"></i></div>
+        <div class="sf-row small"><span>مساحة السجلات</span><span id="storageText" class="mono" dir="ltr">0 KB</span></div>
+      </div>
+    </aside>
+
+    <div class="workspace">
+      <header class="topbar">
+        <button class="icon-btn only-mobile" data-act="toggle-nav" aria-label="القائمة"><i class="fa-solid fa-bars"></i></button>
+        <div class="crumb">
+          <span class="crumb-sys">FBI-NEXUS // CASE MANAGEMENT SYSTEM // A-140</span>
+          <h1 id="pageTitle">لوحة القيادة</h1>
+        </div>
+        <div class="topbar-tools">
+          <div class="threat-pill" id="threatPill" title="مؤشر التهديد العام">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <span id="threatText">—</span>
+          </div>
+          <button class="icon-btn" data-act="search:open" title="بحث شامل (Ctrl+K)"><i class="fa-solid fa-magnifying-glass"></i></button>
+          <button class="icon-btn bell" data-act="go" data-id="documents" title="طلبات قيد المراجعة">
+            <i class="fa-solid fa-bell"></i><b id="bellCount">0</b>
+          </button>
+          <div class="clock" id="clock">--:--</div>
+          <div class="officer-chip" id="officerChip"><b>A-140</b><small>CLEARANCE 5</small></div>
+        </div>
+      </header>
+
+      <main id="view"></main>
+
+      <footer class="statusbar">
+        <span class="sb-item"><i class="fa-solid fa-lock"></i> SECURE LINK · AES-256</span>
+        <span class="sb-item"><i class="fa-solid fa-database"></i> LOCAL ARCHIVE</span>
+        <span class="sb-spacer"></span>
+        <span class="sb-item mono" id="sbDate">—</span>
+        <span class="sb-item mono">FBI-NEXUS · SECURE ARCHIVE</span>
+      </footer>
+    </div>
+  </div>
+</div>
+
+<div id="authRoot"></div>
+<div id="modalRoot"></div>
+<div id="toastRoot"></div>
+<div id="printRoot"></div>
+
+<script src="js/db.js"></script>
+<script src="js/map.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/core.js"></script>
+<script src="js/ops.js"></script>
+</body>
+</html>
