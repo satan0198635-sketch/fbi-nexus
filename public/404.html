@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0a0f15">
+<meta name="robots" content="noindex">
+<title>404 · الصفحة غير موجودة — FBI-NEXUS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0f15; --panel:#0f1720; --line:#22303e; --txt:#dbe4ee;
+    --muted:#8b9aab; --dim:#64748b; --gold:#c8a24a; --red:#b0392f;
+    --cyan:#3d7fb8; --mono:'IBM Plex Mono',monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{min-height:100%}
+  body{
+    min-height:100vh;display:flex;flex-direction:column;
+    background:
+      radial-gradient(900px 500px at 50% -10%,rgba(61,127,184,.12),transparent 70%),
+      radial-gradient(700px 420px at 90% 110%,rgba(200,162,74,.07),transparent 70%),
+      var(--bg);
+    color:var(--txt);
+    font-family:'IBM Plex Sans Arabic','Segoe UI',Tahoma,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  body::before{
+    content:"";position:fixed;inset:0;pointer-events:none;opacity:.35;
+    background-image:linear-gradient(rgba(34,48,62,.35) 1px,transparent 1px),
+                     linear-gradient(90deg,rgba(34,48,62,.35) 1px,transparent 1px);
+    background-size:46px 46px;
+    mask-image:radial-gradient(circle at 50% 30%,#000 0%,transparent 78%);
+  }
+
+  .classif-bar{
+    position:relative;z-index:2;height:26px;flex:0 0 26px;display:flex;align-items:center;gap:12px;
+    padding:0 12px;background:#170c0c;border-bottom:1px solid #3d1a16;
+    font-family:var(--mono);font-size:10px;letter-spacing:1.1px;color:#dec496;
+  }
+  .cb-tag{background:#8a1414;color:#fff;padding:1px 9px;font-weight:600;letter-spacing:2.4px;border-radius:2px}
+  .cb-mid{flex:1;text-align:center;opacity:.8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .cb-right{color:var(--gold);white-space:nowrap}
+
+  main{
+    position:relative;z-index:1;flex:1;display:flex;align-items:center;justify-content:center;
+    padding:40px 20px;
+  }
+  .card{
+    width:min(680px,100%);text-align:center;
+    background:linear-gradient(180deg,rgba(15,23,32,.96),rgba(10,15,21,.96));
+    border:1px solid var(--line);border-radius:6px;
+    box-shadow:0 30px 70px -40px #000,inset 0 1px 0 rgba(255,255,255,.03);
+    padding:38px 34px 34px;
+  }
+
+  .brand{display:flex;align-items:center;justify-content:center;gap:12px}
+  .seal-slot{position:relative;width:64px;height:64px;flex:0 0 64px}
+  .seal-fallback{
+    position:absolute;inset:0;border-radius:50%;
+    border:1px solid rgba(200,162,74,.55);
+    background:radial-gradient(circle at 50% 40%,rgba(200,162,74,.22),rgba(200,162,74,.04) 70%);
+    display:flex;align-items:center;justify-content:center;
+  }
+  .seal-fallback::before{
+    content:"";width:26px;height:26px;background:var(--gold);
+    clip-path:polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 92%,50% 70%,21% 92%,32% 57%,2% 35%,39% 35%);
+    opacity:.9;
+  }
+  .seal-slot img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+  .brand-text{text-align:right}
+  .brand-title{
+    font-family:var(--mono);font-size:1.2rem;font-weight:600;letter-spacing:1.2px;
+    color:#f2f6fa;line-height:1;white-space:nowrap;
+  }
+  .brand-title span{color:var(--gold);font-size:.9em;letter-spacing:.4px}
+  .brand-sub{font-size:.74rem;color:#c3cfdb;margin-top:6px}
+  .brand-sub2{
+    font-family:var(--mono);font-size:.44rem;color:var(--gold);letter-spacing:.4px;
+    margin-top:6px;opacity:.9;line-height:1.7;
+  }
+
+  .code{
+    font-family:var(--mono);font-weight:600;line-height:.9;
+    font-size:clamp(84px,17vw,132px);letter-spacing:2px;
+    color:transparent;-webkit-text-stroke:1px rgba(200,162,74,.55);
+    margin:26px 0 8px;
+  }
+  h1{font-size:1.16rem;font-weight:600;letter-spacing:.2px}
+  p.hint{color:var(--muted);font-size:.86rem;line-height:1.95;margin-top:12px}
+  .path{
+    display:inline-block;max-width:100%;margin-top:16px;padding:6px 12px;
+    font-family:var(--mono);font-size:.72rem;color:#a9b8c8;
+    background:#0a121a;border:1px solid var(--line);border-radius:3px;
+    direction:ltr;text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  }
+  .actions{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:26px}
+  .btn{
+    display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:4px;
+    font-size:.82rem;font-weight:500;text-decoration:none;cursor:pointer;
+    border:1px solid var(--line);background:#111c26;color:var(--txt);
+    transition:background .16s,border-color .16s,transform .16s;
+  }
+  .btn:hover{background:#16242f;border-color:#2d4053;transform:translateY(-1px)}
+  .btn-primary{
+    background:linear-gradient(180deg,#c8a24a,#a8853a);border-color:#d8b665;
+    color:#0c1117;font-weight:600;
+  }
+  .btn-primary:hover{background:linear-gradient(180deg,#d6b15c,#b58f42);border-color:#e2c67a}
+
+  .foot{
+    position:relative;z-index:1;padding:14px 20px 22px;text-align:center;
+    font-family:var(--mono);font-size:.6rem;letter-spacing:.8px;color:var(--dim);
+  }
+  .foot span{color:var(--gold);opacity:.85}
+
+  @media (max-width:520px){
+    .card{padding:28px 20px 26px}
+    .brand-title{font-size:1rem}
+    .brand-sub2{display:none}
+    .seal-slot{width:54px;height:54px;flex:0 0 54px}
+    .actions .btn{width:100%;justify-content:center}
+  }
+</style>
+</head>
+<body>
+
+<div class="classif-bar">
+  <span class="cb-tag">SECRET</span>
+  <span class="cb-mid">LAW ENFORCEMENT SENSITIVE // FBI-NEXUS // LOS SANTOS FIELD OFFICE</span>
+  <span class="cb-right">ERR-404</span>
+</div>
+
+<main>
+  <section class="card">
+    <div class="brand">
+      <div class="seal-slot">
+        <div class="seal-fallback" aria-hidden="true"></div>
+        <img id="sealImg" alt="شعار FBI" hidden>
+      </div>
+      <div class="brand-text">
+        <div class="brand-title">FBI<span>-NEXUS</span></div>
+        <div class="brand-sub">مكتب التحقيقات الفيدرالي</div>
+        <div class="brand-sub2">NETWORK FOR ENFORCEMENT, X-INTELLIGENCE &amp; UNIFIED SECURITY</div>
+      </div>
+    </div>
+
+    <div class="code" aria-hidden="true">404</div>
+    <h1>الصفحة غير موجودة</h1>
+    <p class="hint">
+      المسار المطلوب غير مسجّل في أرشيف النظام، أو تم نقله أو حذفه.
+      تأكد من الرابط أو ارجع إلى مركز القيادة.
+    </p>
+    <div class="path" id="pathBox" dir="ltr"></div>
+
+    <div class="actions">
+      <a class="btn btn-primary" id="homeLink" href="./">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5.5 9.5V21h13V9.5"/></svg>
+        العودة للرئيسية
+      </a>
+      <a class="btn" id="loginLink" href="./">
+        تسجيل الدخول الآمن
+      </a>
+    </div>
+  </section>
+</main>
+
+<div class="foot">
+  FBI-NEXUS <span>//</span> LOS SANTOS FIELD OFFICE <span>//</span> ACCESS LOGGED
+</div>
+
+<script>
+(function () {
+  var pathBox = document.getElementById('pathBox');
+  var homeLink = document.getElementById('homeLink');
+  var loginLink = document.getElementById('loginLink');
+  var sealImg = document.getElementById('sealImg');
+
+  var requested = location.pathname + location.search;
+  pathBox.textContent = requested || '/';
+
+  function applyRoot(root) {
+    homeLink.href = root;
+    loginLink.href = root;
+    sealImg.src = root + 'assets/fbi-seal.svg';
+    sealImg.hidden = false;
+    sealImg.addEventListener('error', function () { sealImg.hidden = true; }, { once: true });
+  }
+
+  // GitHub Pages may serve this file under /<repo>/... or at the domain root.
+  // Probe both candidates so the buttons and seal resolve correctly.
+  var first = location.pathname.split('/').filter(Boolean)[0];
+  var candidates = first ? ['/' + first + '/', '/'] : ['/'];
+
+  (function probe(i) {
+    if (i >= candidates.length) { applyRoot('/'); return; }
+    var root = candidates[i];
+    var timer;
+    var ctrl = window.AbortController ? new AbortController() : null;
+    if (ctrl) { timer = setTimeout(function () { ctrl.abort(); }, 4000); }
+    fetch(root + 'index.html', { method: 'GET', cache: 'no-store', signal: ctrl ? ctrl.signal : undefined })
+      .then(function (res) {
+        if (timer) clearTimeout(timer);
+        res.ok ? applyRoot(root) : probe(i + 1);
+      })
+      .catch(function () {
+        if (timer) clearTimeout(timer);
+        probe(i + 1);
+      });
+  })(0);
+})();
+</script>
+
+</body>
+</html>
