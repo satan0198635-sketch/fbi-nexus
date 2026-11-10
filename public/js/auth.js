@@ -59,7 +59,7 @@ const Auth = (() => {
   /* حسابات وزارة العدل: اعتماد المذكرات والاطلاع على القضايا المرفوعة فقط */
   const DOJ_ROLE = 'doj';
   const DOJ_ACTIONS = [
-    'go', 'noop', 'modal:close', 'lock:now', 'file:open', 'file:download',
+    'go', 'noop', 'modal:close', 'lock:now', 'auth:logout', 'file:open', 'file:download',
     'doc:view', 'doc:approve', 'doc:reject', 'doc:print',
     'doj:case', 'doj:case-approve', 'doj:case-reject', 'doj:comment', 'case:print', 'acct:media'
   ];
@@ -184,10 +184,12 @@ const Auth = (() => {
     const known = remoteMode() && remoteAccounts.length ? remoteAccounts : users().map(u => u.user);
     const list = known.join(' · ') || '—';
     mount(frame(
-      mode === 'auto' ? 'تم قفل الجلسة' : 'الدخول إلى النظام',
+      mode === 'auto' ? 'تم قفل الجلسة' : mode === 'logout' ? 'تم تسجيل الخروج' : 'الدخول إلى النظام',
       mode === 'auto'
         ? 'قُفلت الجلسة تلقائياً بعد فترة عدم نشاط. أدخل اسم المستخدم وكلمة المرور لمتابعة العمل.'
-        : 'أدخل اسم المستخدم وكلمة المرور للحساب المخوّل للوصول إلى الأرشيف الفيدرالي.',
+        : mode === 'logout'
+          ? 'أُنهيت الجلسة الحالية وأُغلق الاتصال بقاعدة البيانات. سجّل الدخول من جديد للحساب المطلوب.'
+          : 'أدخل اسم المستخدم وكلمة المرور للحساب المخوّل للوصول إلى الأرشيف الفيدرالي.',
       `<div class="auth-form">
         <div class="auth-field">
           <label for="au_user"><i class="fa-solid fa-user-shield"></i> اسم المستخدم</label>
@@ -302,19 +304,29 @@ const Auth = (() => {
   }
   function stopAutoLock() { if (timer) clearInterval(timer); timer = null; }
 
-  function lockNow() {
+  async function endSession(mode) {
     const root = $('#authRoot');
     if (root && root.classList.contains('open')) return;
     stopAutoLock();
-    if (remoteMode()) Api.logout();
+    DB.settings.activeUser = '';
+    if (typeof logActivity === 'function') logActivity(mode === 'logout' ? 'تسجيل الخروج' : 'قفل الجلسة', 'auth');
+    save();
+    if (remoteMode()) {
+      /* ندفع آخر تعديل (سطر التدقيق) إلى الخادم قبل إغلاق الجلسة */
+      if (Api.flush) { try { await Api.flush(); } catch (e) { } }
+      Api.logout();
+    }
     try {
       sessionStorage.removeItem(SESSION_KEY);
       sessionStorage.removeItem(USER_KEY);
     } catch (e) { }
-    if (typeof logActivity === 'function') logActivity('قفل الجلسة', 'auth');
-    save();
-    lockScreen('auto');
+    const chip = $('#officerChip');
+    if (chip) chip.innerHTML = '<b>—</b><small>LOCKED</small>';
+    lockScreen(mode);
   }
+
+  function lockNow() { endSession('auto'); }
+  function logoutNow() { endSession('logout'); }
 
   async function gate() {
     if (remoteMode()) {
@@ -456,7 +468,7 @@ const Auth = (() => {
 
   ['pointerdown', 'keydown', 'wheel', 'touchstart'].forEach(ev =>
     document.addEventListener(ev, () => { lastActivity = Date.now(); }, { passive: true }));  return {
-    setRemote, gate, lockNow, lockScreen, ensureAccounts, current, isAdmin, isDoj, allowed, canPage, homePage, hasUsers,
+    setRemote, gate, lockNow, logoutNow, lockScreen, ensureAccounts, current, isAdmin, isDoj, allowed, canPage, homePage, hasUsers,
     changePass, addUser, resetPass, removeUser, media, setMedia, updateProfile, updateUser,
     RANKS,
     list: () => users().map(publicUser),

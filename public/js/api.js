@@ -150,7 +150,7 @@ const Api = (() => {
 
   return {
     probe, isRemote, accounts, seeded, bootstrap, login, logout, session,
-    getState, queueSave, listFiles, putFile, deleteFile, watch,
+    getState, queueSave, flush, listFiles, putFile, deleteFile, watch,
     rev: () => rev
   };
 })();

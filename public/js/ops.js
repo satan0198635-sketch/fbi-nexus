@@ -1222,7 +1222,10 @@ function pageSettings() {
   <div class="card mt">
     <div class="card-head">
       <div class="card-title"><i class="fa-solid fa-key"></i> أمان الحساب</div>
-      <button class="btn btn-ghost btn-sm" data-act="lock:now"><i class="fa-solid fa-lock"></i> قفل الجلسة الآن</button>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-ghost btn-sm" data-act="lock:now"><i class="fa-solid fa-lock"></i> قفل الجلسة</button>
+        <button class="btn btn-danger btn-sm" data-act="auth:logout"><i class="fa-solid fa-right-from-bracket"></i> تسجيل الخروج</button>
+      </div>
     </div>
     <dl class="kv">
       <dt>الحساب الحالي</dt><dd class="mono">${esc(cu ? cu.user : '—')}</dd>
@@ -1890,6 +1893,7 @@ action('pin:change', async () => {
   save(); render(); toast('تم تحديث كلمة المرور');
 });
 action('lock:now', () => Auth.lockNow());
+action('auth:logout', () => Auth.logoutNow());
 
 action('acct:profile', () => {
   const res = Auth.updateProfile({ name: val('#pr_name'), rank: val('#pr_rank'), division: val('#pr_div') });

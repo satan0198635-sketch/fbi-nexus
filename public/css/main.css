@@ -143,6 +143,7 @@ input,select,textarea{font-family:inherit}
   color:#8b9aab;display:grid;place-items:center;cursor:pointer;position:relative;transition:.15s;
 }
 .icon-btn:hover{color:#dbe4ee;border-color:#3a4f64;background:rgba(255,255,255,.05)}
+.icon-btn.danger:hover{color:#f2b3ac;border-color:rgba(176,57,47,.65);background:rgba(176,57,47,.14)}
 .bell b{
   position:absolute;top:-5px;left:-5px;background:#a32e26;color:#fff;font-size:.56rem;
   min-width:15px;height:15px;border-radius:8px;display:grid;place-items:center;padding:0 4px;
