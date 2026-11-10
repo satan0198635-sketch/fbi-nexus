@@ -33,11 +33,17 @@ const pool = DATABASE_URL
   ? new Pool({ connectionString: DATABASE_URL, ssl: needsSsl ? { rejectUnauthorized: false } : false, max: 5 })
   : null;
 
+let dbError = '';
+let dbReady = false;
+let lastInitTry = 0;
+
 async function initDb() {
   if (!pool) {
+    dbError = 'DATABASE_URL غير مضبوط';
     console.warn('[FBI-NEXUS] DATABASE_URL غير مضبوط — الواجهة ستعمل بالوضع المحلي فقط.');
     return false;
   }
+  lastInitTry = Date.now();
   await pool.query(`
     CREATE TABLE IF NOT EXISTS app_state (
       id         integer PRIMARY KEY DEFAULT 1,
@@ -55,8 +61,25 @@ async function initDb() {
       at   bigint NOT NULL DEFAULT 0
     );
   `);
+  dbError = '';
+  dbReady = true;
   console.log('[FBI-NEXUS] PostgreSQL جاهز.');
   return true;
+}
+
+/* يفحص الجاهزية ويعيد المحاولة دوريًا، فقاعدة Render قد تستيقظ بعد الخدمة */
+async function ensureDb() {
+  if (!pool) return false;
+  if (dbReady) return true;
+  if (Date.now() - lastInitTry < 30000) return false;
+  try {
+    await initDb();
+  } catch (e) {
+    dbError = e.message || String(e);
+    console.error('[FBI-NEXUS] تعذر الاتصال بقاعدة البيانات:', dbError);
+    dbReady = false;
+  }
+  return dbReady;
 }
 
 /* ---------------- auth helpers ---------------- */
@@ -157,9 +180,24 @@ app.use((req, res, next) => {
 
 /* --- API --- */
 app.get('/api/health', async (req, res) => {
+  res.setHeader('Cache-Control', 'no-store');
   let db = false;
-  try { db = !!pool && (await pool.query('SELECT 1')).rowCount === 1; } catch (e) { db = false; }
-  res.json({ ok: true, db, rev: db ? (await readState() || {}).rev || 0 : 0 });
+  try {
+    if (await ensureDb()) {
+      db = (await pool.query('SELECT 1')).rowCount === 1;
+      dbError = db ? '' : 'استعلام الفحص لم يرجع نتيجة';
+    }
+  } catch (e) {
+    db = false;
+    dbError = e.message || String(e);
+  }
+  res.json({
+    ok: true,
+    db,
+    hasDatabaseUrl: !!pool,
+    error: db ? '' : String(dbError || '').slice(0, 240),
+    rev: db ? (await readState() || {}).rev || 0 : 0
+  });
 });
 
 app.get('/api/accounts', async (req, res) => {
@@ -323,7 +361,11 @@ app.get('*', (req, res) => {
 
 /* ---------------- start ---------------- */
 initDb()
-  .catch((e) => console.error('[FBI-NEXUS] فشل الاتصال بقاعدة البيانات:', e.message))
+  .catch((e) => {
+    dbError = e.message || String(e);
+    dbReady = false;
+    console.error('[FBI-NEXUS] فشل الاتصال بقاعدة البيانات:', dbError);
+  })
   .finally(() => {
     app.listen(PORT, () => {
       console.log(`[FBI-NEXUS] running on port ${PORT} — mode: ${pool ? 'postgres' : 'local'}`);

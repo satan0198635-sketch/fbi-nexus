@@ -152,6 +152,22 @@ const Auth = (() => {
     root.innerHTML = '';
   }
 
+  function storeLabel() {
+    const h = (typeof Api !== 'undefined' && Api.health) ? Api.health() : { reachable: false, db: false };
+    return h.db ? 'POSTGRESQL' : h.reachable ? 'NO DATABASE' : 'LOCAL ARCHIVE';
+  }
+
+  function serverWarning() {
+    const h = (typeof Api !== 'undefined' && Api.health) ? Api.health() : { reachable: false, db: false };
+    if (!h.reachable || h.db) return '';
+    return `<div class="auth-warn">
+      <i class="fa-solid fa-triangle-exclamation"></i>
+      <div><b>الخادم يعمل لكن قاعدة البيانات غير متصلة.</b>
+      الحسابات في هذه الحالة تُحفظ داخل هذا المتصفح فقط، ولن تعمل على جهاز آخر.
+      ${h.error ? `<span class="mono" dir="ltr">${esc(h.error)}</span>` : ''}</div>
+    </div>`;
+  }
+
   function frame(title, sub, inner) {
     return `<div class="auth-screen">
       <div class="auth-grid">
@@ -172,7 +188,7 @@ const Auth = (() => {
           <div class="auth-foot">
             <span><i class="fa-solid fa-shield-halved"></i> SECURE SESSION</span>
             <span><i class="fa-solid fa-lock"></i> AES-256</span>
-            <span><i class="fa-solid fa-database"></i> LOCAL ARCHIVE</span>
+            <span><i class="fa-solid fa-database"></i> ${storeLabel()}</span>
           </div>
         </section>
       </div>
@@ -200,6 +216,7 @@ const Auth = (() => {
           <input class="inp" id="au_pass" type="password" autocomplete="current-password" placeholder="••••••••" dir="ltr">
         </div>
         <div class="auth-error" id="au_err">${esc(msg)}</div>
+        ${serverWarning()}
         <button class="btn auth-btn" id="au_submit"><i class="fa-solid fa-shield-halved"></i><span>دخول آمن</span></button>
         <div class="auth-policy">
           <div class="auth-policy-head"><i class="fa-solid fa-id-card-clip"></i> الحسابات المخوّلة</div>

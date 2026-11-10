@@ -1401,6 +1401,13 @@ function bindGlobal() {
 
 async function boot() {
   const remote = typeof Api !== 'undefined' && await Api.probe();
+  if (!remote && typeof Api !== 'undefined' && Api.health) {
+    const h = Api.health();
+    if (h.reachable && !h.db) {
+      console.warn('[FBI-NEXUS] الخادم متاح لكن قاعدة البيانات غير متصلة:', h.error);
+      setTimeout(() => toast('الخادم غير مرتبط بقاعدة بيانات — الحسابات والبيانات محلية في هذا المتصفح فقط', 'err'), 1500);
+    }
+  }
 
   if (remote) {
     const accounts = await Api.accounts().catch(() => []);

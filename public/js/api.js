@@ -12,6 +12,7 @@ const Api = (() => {
   let saving = false;
   let onChange = null;
   let watchTimer = null;
+  let info = { reachable: false, db: false, error: '' };
 
   const url = (p) => BASE + p;
 
@@ -31,15 +32,22 @@ const Api = (() => {
   async function probe() {
     try {
       const r = await call('GET', 'health');
-      remote = !!(r.ok && r.data && r.data.ok && r.data.db);
+      info = {
+        reachable: !!(r.ok && r.data && r.data.ok),
+        db: !!r.data.db,
+        error: String(r.data.error || '')
+      };
+      remote = info.reachable && info.db;
       if (remote) rev = Number(r.data.rev) || 0;
     } catch (e) {
+      info = { reachable: false, db: false, error: '' };
       remote = false;
     }
     return remote;
   }
 
   const isRemote = () => remote;
+  const health = () => info;
 
   async function accounts() {
     const r = await call('GET', 'accounts');
@@ -149,7 +157,7 @@ const Api = (() => {
   }
 
   return {
-    probe, isRemote, accounts, seeded, bootstrap, login, logout, session,
+    probe, isRemote, health, accounts, seeded, bootstrap, login, logout, session,
     getState, queueSave, flush, listFiles, putFile, deleteFile, watch,
     rev: () => rev
   };
